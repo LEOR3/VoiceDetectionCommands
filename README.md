@@ -1,4 +1,4 @@
-# Voice Detection Commands with FFT 
+# Voice Detection Commands with FFT in ESP32
 
 ## **Voice Detection With 3 Saved Commands**
 
