@@ -9,7 +9,7 @@ In this project is used:
 1.- ESP32 Microcontroller
 
 2.- Arduino FFT Library by Enrique Condes (kosme), you can download it directly in arduino IDE library manager, if you are being use this IDE.
-    https://github.com/kosme/arduinoFFT.git
+    [https://github.com/kosme/arduinoFFT.git]
 
 3.- Microphone  (KY-038)
 
