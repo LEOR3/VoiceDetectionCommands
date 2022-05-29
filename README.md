@@ -1,8 +1,6 @@
-# VoiceDetectionCommands
+# Voice Detection Commands with FFT 
 
-## Voice Detection Commands with FFT 
-
-**Voice Detection With 3 Saved Commands**
+## **Voice Detection With 3 Saved Commands**
 
 This project has been created with the porpuse of savingh 3 commands that can be said into the microphone connected to the microcontroller, to later identified these saved commands if it necessary, in this project the commands are identified with the  corresponding saved command number and its displayed in a OLED.
 
