@@ -34,8 +34,6 @@
 #define SAMPLES 512         //SAMPLES FFT. Must be a base 2 number. Max 128 for Arduino Uno.
 #define SAMPLING_FREQ 8000   //Ts = Based on Nyquist, must be 2 times the highest expected frequency. Determines maximum frequency that can be analysed by the FFT  Fmax = sampleF/2
 #define THRESHOLD 20
-//#define AMPLITUDE 1000       // Depending on your audio source level, you may need to alter this value. Can be used as a 'sensitivity' control.
-#define AMPLITUDE 500            // Depending on your audio source level, you may need to increase this value
 #define NOISE 400           // Used as a crude noise filter, values below this are ignored
 #define NAverage 12
 
@@ -272,9 +270,9 @@ void loop() {
     if(f < 3){
       c++;
       if (c == 10){
-        for(int b=0; b<(SAMPLES/2); b++) // Guarda el x comando de la suma de los promedios de las SAMPLING_FREQ/SAMPLES FFT
+        for(int b=0; b<(SAMPLES/2); b++) // Saves the x command of the sum of the averages of the SAMPLING_FREQ/SAMPLES FFT
          command[f][b]=res[b]/c;
-        for (int j=0; j < (SAMPLES/2); j++) // Resetea el valor donde esta guardado la suma de los promedios de las SAMPLING_FREQ/SAMPLES FFT
+        for (int j=0; j < (SAMPLES/2); j++) // Resets the value where the sum of the averages of the SAMPLING_FREQ/SAMPLES FFT is stored
           res[j] = 0;
         c = 0;
         f++;
@@ -372,10 +370,10 @@ void page2(){
       double peakAmplitude = FFT.MajorPeakAmplitude();
       //peakAmplitude=map(round(peakAmplitude),250,190000,0.12,3.3); 
      
-      average = (sum-peakAmplitude)/k-1;//suma-amplitud del pico entre el numero de muestras menos 1
+      average = (sum-peakAmplitude)/k-1;// sum-amplitude of the peak between the number of samples minus 1
       double voiceAv = sum/k;
       float porcent = (average/peakAmplitude) * 100;
-      peakAmplitude=0.0000167588932*peakAmplitude+0.11581;//hasta el final de los calculos para que no afecte
+      peakAmplitude=0.0000167588932*peakAmplitude+0.11581; // until the end of the calculations so that it does not affect
       Serial.print("SNR: ");
       Serial.print(porcent);
       Serial.println("%");
