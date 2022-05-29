@@ -1,5 +1,5 @@
 /* VOICE DETECTION PROJECT 
- *  
+ * Author: LEOR
  * Voice Detection With 3 Saved Commands
 
    HARDWARE
@@ -27,7 +27,7 @@
 #include <Fonts/FreeSerif9pt7b.h>
 #include <Adafruit_SSD1306.h>
 
-//con esta configuración va desde 10hz a 1khz exactamente
+// With this configuration it goes from 10hz to 1khz exactly
 //#define SAMPLES 512              // Must be a power of 2, max512 creo
 //#define SAMPLING_FREQ 2000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
 
@@ -45,6 +45,11 @@
 
 // create an OLED display object connected to I2C
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+/*==========================================================================================================
+                                FFT INFORMATION
+============================================================================================================*/
+
 
 // The maximum frequency we can sample is half the sampling rate
 // Frequency bins are the samples quantity
@@ -71,6 +76,14 @@ Frequency width of each bin is Sample Rate / Number of Samples
 So everything between Zero and Frequency Width is locked into bin zero, from Frequency Width to 2*Frequency Width is in bin one
 */
 
+
+/*==========================================================================================================
+                                  DECLARATION PART
+============================================================================================================*/
+
+
+
+
 /*==========================================================================================================
                                        LCD
 ============================================================================================================*/
@@ -95,12 +108,10 @@ byte peak[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};              // The length of t
 
 const int number = round(SAMPLING_FREQ/SAMPLES);
  
-double vReal[SAMPLES]; //create 2D vector of size SAMPLES to hold real values
-double vImag[SAMPLES]; //create 2D vector of size SAMPLES to hold imaginary values
+double vReal[SAMPLES]; //create 1D vector of size SAMPLES to hold real values
+double vImag[SAMPLES]; //create 1D vector of size SAMPLES to hold imaginary values
 double datasAv[number]; //create vector of size SAMPLING_FREQ/SAMPLES to hold averages
-double datas[number][SAMPLES]; 
-double dReal[SAMPLES];
-double dImag[SAMPLES];
+double datas[number][SAMPLES]; //create 2D vector of size SAMPLES to hold real values of n FFT
 
 arduinoFFT FFT = arduinoFFT();
 //arduinoFFT FFT = arduinoFFT(vReal, vImag, SAMPLES, SAMPLING_FREQ);
@@ -122,24 +133,20 @@ char option[4][4]{ //DTMF Options
 };
 //
 
-double voice[12];
 int j = 0;
 int k = 0;
-int counter = 0;
-const int lim = 4;
 double sum = 0;
-double sum2 = 0;
 double average = 0;
 int c = 0;
 int f = 0;
 int comando=0; 
 
-double peaks[number][SAMPLES/2];
 double res[SAMPLES/2];
 double command[3][SAMPLES/2];
 
 boolean page = false;
 unsigned long newTime, new2Time;
+
 
 //--------------------------------------------------------------------------------
 
@@ -148,23 +155,20 @@ void setup() {
   Serial.begin(9600);
   
   pinMode(18, INPUT_PULLUP);
- // pinMode(27, INPUT_PULLUP);
   pinMode(12, INPUT_PULLUP);
   pinMode(14, INPUT_PULLUP);
-  //pinMode(15, INPUT_PULLUP);}//switch para cambiar de practica
 
-
-  // initialize OLED display with I2C address 0x3C
+  // Initialize OLED display with I2C address 0x3C
   if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("failed to start SSD1306 OLED"));
     while (1);
   }else
     Serial.println("OLED STARTED");
-  delay(2000);         // wait two seconds for initializing
+  delay(2000);         // Wait two seconds for initializing
 
-  oled.clearDisplay(); // clear display
-  oled.setTextColor(WHITE);    // se tiene que configurar para que funicone
-  oled.setTextSize(0.1);         // 1
+  oled.clearDisplay(); // Clear display
+  oled.setTextColor(WHITE);    // You have to configure it to work
+  oled.setTextSize(0.1);         // Set the letter size
   
   //Sampling Period FFT
   //How many microseconds there are between each sampling event
@@ -218,6 +222,7 @@ void loop() {
             //do nothing
           }
       }
+      /*Perform FFT on samples*/
       //Compute FFT
       FFT.DCRemoval(vReal,SAMPLES);
       FFT.Windowing(vReal, SAMPLES, FFT_WIN_TYP_RECTANGLE, FFT_FORWARD); /* Weigh data */
@@ -236,58 +241,19 @@ void loop() {
     Serial.print("Conversion time: ");
     Serial.print(conversionTime);
     Serial.println(" SEG");
-  
-  
-      /*Perform FFT on samples*/
-      //Compute FFT
-      //FFT.Windowing(f, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-  //    FFT.Windowing(vReal, SAMPLES, FFT_WIN_TYP_RECTANGLE, FFT_FORWARD);
-  //    FFT.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
-  //    FFT.ComplexToMagnitude(vReal, vImag, SAMPLES);
-  //    FFT.DCRemoval(vReal,SAMPLES);
-      //PrintVector(vReal, SAMPLES >> 1, SCL_PLOT);
-  
       
-      /*FFT.Windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-      FFT.Windowing(vReal, SAMPLES, FFT_WIN_TYP_RECTANGLE, FFT_FORWARD)
-      FFT.Compute(FFT_FORWARD);
-      FFT.ComplexToMagnitude();
-      FFT.DCRemoval(); // If my signal have a DC offset so this line remove that DC offset from the data
-      */
-      
-       // Analyse FFT results
-       // Each element represents a frequency bin and the value of each element represents the amplitude of the amount of that frequency
+    // Analyse FFT results
+    // Each element represents a frequency bin and the value of each element represents the amplitude of the amount of that frequency
        
     k=0;
     sum=0;
     double peak = 0;
     double sumAverages;
     int temp;
-      
-    // We remove the noise and only retrieve the n fft values (in this case 4 values) of the n sampling_frequency/samples we need to store in an array //
-
-
-//    
-//    for (int i=0; i < number; i++){
-//      for (int j=0; j<(SAMPLES/2); j++){       // Don't use sample 0 and only first SAMPLES/2 are usable. Each array element represents a frequency bin and its value the amplitude.
-//          
-//  //        Serial.print(i);
-//  //        Serial.println(j);
-//  //        Serial.print("RealSamples: ");  
-//  //        Serial.println(FFT.GetAmplitudeFFT(k));
-//          peaks[i][j] = GetFreqFFT(j);
-//  //        Serial.print(i);
-//  //        Serial.println(j);
-//  //        Serial.println(GetFreqFFT(j));
-//  //        sum += peak;     
-//            
-//          k++;
-//        }  
-//      k=0;
-//        //datasAv[i] = sum;
-//        //sumAverages += datasAv[i];
-
+     
     
+    // PROCESSING //
+     
     // We avaerage each data corresponding to all the sampling_frequency/samples values and thus obtain in a 1D array of the average //
     
     for (int j=0; j < (SAMPLES/2); j++){ 
@@ -301,9 +267,7 @@ void loop() {
         sum = 0;
       }  
   
-    
-  
-    //SAVE DATA
+    // SAVE DATA //
    
     if(f < 3){
       c++;
@@ -317,9 +281,9 @@ void loop() {
       }
     }
   
-     //READING AND CONFIRMATION
-          
-    
+     
+    // READING AND CONFIRMATION //
+         
     int deviation[3]; // Deviation from mean
 
      
@@ -364,21 +328,8 @@ void loop() {
        for(int c=0; c<3 ;c++)
           deviation[c] = 0; // Deviation sums
     }
-  
-  
-    //  aquí cada que no fueron 4 muestras, checar que sí se haya reiniciado bien la suma
-  //  if (k > 0){  //antes era 0, pero más para que sean más de 4 muestras
-  //
-  //  }
     
   }
- 
-//  if (digitalRead(27) == LOW){ //RESET BUTTON
-//     Serial.println("caca");
-//    c = 0;
-//    f = 0;
-//    page = false;
-//  }
   
   if (digitalRead(12) == LOW){ //FIRST PAGE OLED
     page = false;
@@ -391,10 +342,8 @@ void loop() {
 }
 
 
-
 /* FUNCTIONS  */
 
-// 
 
 double GetFreqFFT(int i)
 {  
