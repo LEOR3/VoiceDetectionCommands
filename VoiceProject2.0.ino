@@ -80,17 +80,6 @@ So everything between Zero and Frequency Width is locked into bin zero, from Fre
 ============================================================================================================*/
 
 
-
-
-/*==========================================================================================================
-                                       LCD
-============================================================================================================*/
-
-const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2; 
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);;
-
-//-------------------------------------------------------------------------------
-
 /*==========================================================================================================
                                        FFT
 ============================================================================================================*/
@@ -101,8 +90,6 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);;
 
 unsigned int samplingPeriod;
 unsigned long microSeconds;
-
-byte peak[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};              // The length of these arrays must be >= NUM_BANDS
 
 const int number = round(SAMPLING_FREQ/SAMPLES);
  
@@ -123,12 +110,6 @@ arduinoFFT FFT = arduinoFFT();
 
 int analogPin = 35; //Pin that reads the analogpin
 
-char option[4][4]{ //DTMF Options
-  {'1', '2', '3', 'A'},
-  {'4', '5', '6', 'B'},
-  {'7', '8', '9', 'C'},
-  {'*', '0', '#', 'D'}
-};
 //
 
 int j = 0;
@@ -153,10 +134,12 @@ void setup() {
   //Set up SERIAL
   Serial.begin(9600);
   
+  //Set up INPUTS
   pinMode(18, INPUT_PULLUP);
   pinMode(12, INPUT_PULLUP);
   pinMode(14, INPUT_PULLUP);
 
+  //Set up OLED
   // Initialize OLED display with I2C address 0x3C
   if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("failed to start SSD1306 OLED"));
