@@ -414,6 +414,6 @@ void page2(){
       oled.println(voiceAv);
       oled.setCursor(0, 48);      
       oled.print("num sums:");
-      oled.println(k);
+      oled.println(SAMPLES/2);
       oled.display();              // display on OLED
 }
