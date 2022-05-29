@@ -134,6 +134,7 @@ char option[4][4]{ //DTMF Options
 int j = 0;
 int k = 0;
 double sum = 0;
+double sumAv = 0;
 double average = 0;
 int c = 0;
 int f = 0;
@@ -259,6 +260,7 @@ void loop() {
       
           // Don't use sample 0 and only first SAMPLES/2 are usable. Each array element represents a frequency bin and its value the amplitude.
          sum += datas[i][j];
+         sumAv = sum;
           
         }  
         res[j] += sum/number;
@@ -370,8 +372,8 @@ void page2(){
       double peakAmplitude = FFT.MajorPeakAmplitude();
       //peakAmplitude=map(round(peakAmplitude),250,190000,0.12,3.3); 
      
-      average = (sum-peakAmplitude)/k-1;// sum-amplitude of the peak between the number of samples minus 1
-      double voiceAv = sum/k;
+      average = (sumAv-peakAmplitude)/(SAMPLES/2)-1;// sum-amplitude of the peak between the number of samples minus 1
+      double voiceAv = sumAv/(SAMPLES/2);
       float porcent = (average/peakAmplitude) * 100;
       peakAmplitude=0.0000167588932*peakAmplitude+0.11581; // until the end of the calculations so that it does not affect
       Serial.print("SNR: ");
