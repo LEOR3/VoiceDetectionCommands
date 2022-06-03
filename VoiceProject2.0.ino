@@ -363,7 +363,7 @@ void page2(){
       Serial.print("Average Samples Vreal FFT: ");
       Serial.println(voiceAv);
       Serial.print("num of times sumed: ");
-      Serial.println(k);
+      Serial.println(SAMPLES/2);
       Serial.println("__________");
 
 
