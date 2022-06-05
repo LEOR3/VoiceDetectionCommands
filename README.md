@@ -15,4 +15,4 @@ In this project is used:
 
 4.- OLED 128X64 
 
-5.- Buttons (If you need the 2 pages that are included in this project).
+5.- Buttons (3 If you need the 2 pages that are included in this project).
