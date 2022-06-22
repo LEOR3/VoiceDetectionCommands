@@ -6,7 +6,8 @@
    - ESP32 Microcontroller
    - Microphone (KY-038)
    - OLED 128X64  Interface: I2C
-   - Buttons (If you need the 2 pages that are included in this project).
+   - 1 Button (To saved commands only when is pushed the button)
+   - 2 Extra Buttons (If you need the 2 pages that are included in this project)
 
    SOFTWARE
    - Arduino FFT Library by Enrique Condes (kosme), you can download it directly in arduino IDE library manager, if you are being use this IDE.
