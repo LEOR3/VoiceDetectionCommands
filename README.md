@@ -15,6 +15,6 @@ In this project is used:
 
 4.- OLED 128X64 
 
-5.- 1 Button
+5.- 1 Button (To saved commands only when is pushed the button)
 
-6.- 2 Extra Buttons (If you need the 2 pages that are included in this project).
+6.- 2 Extra Buttons (If you need the 2 pages that are included in this project)
